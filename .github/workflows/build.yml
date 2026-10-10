@@ -40,3 +40,21 @@ jobs:
         with:
           name: zulib
           path: bin/
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: zulib
+          path: out
+      - name: Publish Zulib.dll as release bitzen-protocol
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          sha256sum out/Zulib.dll
+          gh release view bitzen-protocol >/dev/null 2>&1 || gh release create bitzen-protocol --prerelease --target "$GITHUB_SHA" --title "Zulib for the BitZen protocol upgrade (test builds)" --notes "Test builds of Zulib from branch bitzen-protocol. Devnet and testnet only."
+          gh release upload bitzen-protocol out/Zulib.dll --clobber
