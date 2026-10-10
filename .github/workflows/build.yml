@@ -8,7 +8,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    container: mono:6.12
+    container:
+      image: mono:6.12
+      volumes:
+        - /etc/ssl/certs:/hostcerts:ro
     steps:
       - name: Tools
         run: |
@@ -16,6 +19,7 @@ jobs:
           sed -i '/buster-updates/d' /etc/apt/sources.list
           apt-get -o Acquire::Check-Valid-Until=false update -qq && apt-get install -y -qq git ca-certificates libgomp1 >/dev/null
           which fsharpc || true
+          cert-sync --quiet /hostcerts/ca-certificates.crt
       - uses: actions/checkout@v4
       - name: Restore
         shell: bash
