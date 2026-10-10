@@ -12,7 +12,7 @@ mkdir -p fsharp/Extracted bin
 mono packages/ZFStar/tools/fstar.exe --smt packages/zen_z3_linux/output/z3-linux --prims "$PWD/fstar/prims.fst" \
   --no_default_includes --include fstar/ "${ARGS[@]}" "$PWD"/fstar/*.fst "$PWD"/fstar/*.fsti
 ls fsharp/Extracted
-FILES=$(sed -n '/^Target "Build"/,/|\]/p' build.fsx | grep -o '"fsharp/[^"]*\.fs"' | grep -v '^//' | tr -d '"')
+FILES=$(sed -n '/^Target "Build"/,/|\]/p' build.fsx | grep -v '^ *//' | grep -o '"fsharp/[^"]*\.fs"' | grep -v '^//' | tr -d '"')
 FW=/usr/lib/mono/4.7-api
 pick() { ls $1 2>/dev/null | head -n 1; }
 FSCORE=$(pick "packages/FSharp.Core/lib/net45/FSharp.Core.dll"); OCAML=$(pick "packages/FSharp.Compatibility.OCaml/lib/net45/FSharp.Compatibility.OCaml.dll")
