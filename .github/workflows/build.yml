@@ -20,7 +20,7 @@ jobs:
       - name: Restore
         shell: bash
         run: |
-          mono .paket/paket.exe restore > /tmp/r.txt 2>&1; RC=$?
+          RC=0; mono .paket/paket.exe restore > /tmp/r.txt 2>&1 || RC=$?
           tail -n 30 /tmp/r.txt
           tail -n 9 /tmp/r.txt | cut -c1-400 | sed 's/%/%25/g' | while IFS= read -r l; do echo "::notice title=restore::$l"; done
           exit $RC
@@ -28,7 +28,7 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          ./build.sh Extract > /tmp/ex.txt 2>&1; RC=$?
+          RC=0; ./build.sh Extract > /tmp/ex.txt 2>&1 || RC=$?
           tail -n 40 /tmp/ex.txt
           grep -i -E "error|fail" /tmp/ex.txt | head -n 8 | cut -c1-400 | sed 's/%/%25/g' | while IFS= read -r l; do echo "::notice title=extract::$l"; done
           ls fsharp/Extracted | head -n 40
@@ -36,7 +36,7 @@ jobs:
       - name: Build
         shell: bash
         run: |
-          ./build.sh Build > /tmp/b.txt 2>&1; RC=$?
+          RC=0; ./build.sh Build > /tmp/b.txt 2>&1 || RC=$?
           tail -n 60 /tmp/b.txt
           grep -i -E "error|fail" /tmp/b.txt | sort -u | head -n 9 | cut -c1-400 | sed 's/%/%25/g' | while IFS= read -r l; do echo "::notice title=build::$l"; done
           ls -la bin || true
