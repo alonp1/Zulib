@@ -10,7 +10,7 @@ for m in "${EXTRACT[@]}"; do ARGS+=(--extract_module "$m"); done
 ARGS+=(--codegen-lib Zen.Cost --codegen-lib Zen.Array --codegen-lib Zen.Types --codegen-lib Zen.Sha3 --codegen-lib Zen.Hash --odir fsharp/Extracted)
 mkdir -p fsharp/Extracted bin
 mono packages/ZFStar/tools/fstar.exe --smt packages/zen_z3_linux/output/z3-linux --prims "$PWD/fstar/prims.fst" \
-  --no_default_includes --include fstar/ "${ARGS[@]}" fstar/*.fst fstar/*.fsti
+  --no_default_includes --include fstar/ "${ARGS[@]}" "$PWD"/fstar/*.fst "$PWD"/fstar/*.fsti
 ls fsharp/Extracted
 FILES=$(sed -n '/^Target "Build"/,/|\]/p' build.fsx | grep -o '"fsharp/[^"]*\.fs"' | grep -v '^//' | tr -d '"')
 FW=/usr/lib/mono/4.7-api
