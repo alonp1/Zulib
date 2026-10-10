@@ -19,7 +19,11 @@ jobs:
       - uses: actions/checkout@v4
       - name: Restore
         shell: bash
-        run: set -o pipefail; mono .paket/paket.exe restore 2>&1 | tail -n 20
+        run: |
+          mono .paket/paket.exe restore > /tmp/r.txt 2>&1; RC=$?
+          tail -n 30 /tmp/r.txt
+          tail -n 9 /tmp/r.txt | cut -c1-400 | sed 's/%/%25/g' | while IFS= read -r l; do echo "::notice title=restore::$l"; done
+          exit $RC
       - name: Extract
         shell: bash
         run: |
