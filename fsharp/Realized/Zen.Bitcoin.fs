@@ -115,7 +115,7 @@ let private hashPath auditPath index txHash =
         doubleHash conc
     Array.fold concatAndHash txHash (Array.indexed auditPath)
 
-let checkInclusion (_:int)
+let checkInclusion (_:Prims.nat)
                    (auditPath : hash array)
                    (index : uint32)
                    (txHash: hash)

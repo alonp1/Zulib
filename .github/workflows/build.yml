@@ -1,0 +1,32 @@
+name: build
+# Builds Zulib.dll from source on Mono (the toolchain of release 0.3.43) and keeps it as a workflow artifact.
+on:
+  push:
+    branches: [bitzen-protocol]
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    container: mono:6.12
+    steps:
+      - name: Tools
+        run: |
+          sed -i 's|deb.debian.org/debian-security|archive.debian.org/debian-security|g; s|deb.debian.org/debian|archive.debian.org/debian|g; s|security.debian.org|archive.debian.org/debian-security|g' /etc/apt/sources.list
+          sed -i '/buster-updates/d' /etc/apt/sources.list
+          apt-get -o Acquire::Check-Valid-Until=false update -qq && apt-get install -y -qq git ca-certificates libgomp1 >/dev/null
+          which fsharpc || true
+      - uses: actions/checkout@v4
+      - name: Restore
+        run: mono .paket/paket.exe restore 2>&1 | tail -n 20
+      - name: Extract
+        run: ./build.sh Extract 2>&1 | tail -n 40
+      - name: Build
+        run: |
+          ./build.sh Build 2>&1 | tail -n 40
+          ls -la bin
+          test -f bin/Zulib.dll
+      - uses: actions/upload-artifact@v4
+        with:
+          name: zulib
+          path: bin/
